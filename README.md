@@ -149,3 +149,142 @@ git push origin main
 ```
 
 These commands merge the code from 'dev' into 'main' and push the changes to GitHub.
+
+## 5. Evidence of Successful Pipeline
+
+### Job 1 - Successful Tests
+
+After pushing changes to the 'dev' branch, the GitHub webhook triggered Job 1 automatically.
+
+The tests passed, and the build completed successfully.
+
+**Job 1 Console Output:**
+
+```text
+Started by user Trainee
+Running as SYSTEM
+Building remotely on EC2 (sparta-aws) - jenkins-node-2204-java17v5 (i-01869545601d0a1d0) in workspace /var/jenkins/workspace/piravien-spapp-job1-ci-test
+The recommended git tool is: NONE
+using credential piravien_github_key
+Cloning the remote Git repository
+Cloning repository git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git
+ > git init /var/jenkins/workspace/piravien-spapp-job1-ci-test # timeout=10
+Fetching upstream changes from git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+using GIT_SSH to set credentials to read and write to github
+ > git fetch --tags --force --progress -- git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/dev^{commit} # timeout=10
+Checking out Revision e73c9c39ff93e74b787a236666a74b9e9f5e47fb (refs/remotes/origin/dev)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f e73c9c39ff93e74b787a236666a74b9e9f5e47fb # timeout=10
+Commit message: "add message testing webhook on frontpage"
+ > git rev-list --no-walk e73c9c39ff93e74b787a236666a74b9e9f5e47fb # timeout=10
+[piravien-spapp-job1-ci-test] $ /bin/sh -xe /tmp/jenkins15672312421482799629.sh
++ cd app
++ npm install
+npm warn deprecated inflight@1.0.6: This module is not supported, and leaks memory. Do not use it. Check out lru-cache if you want a good and tested way to coalesce async requests by a key value, which is much more comprehensive and powerful.
+npm warn deprecated rimraf@3.0.2: Rimraf versions prior to v4 are no longer supported
+npm warn deprecated glob@8.1.0: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated glob@7.2.3: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
+npm warn deprecated superagent@8.1.2: Please upgrade to superagent v10.2.2+, see release notes at https://github.com/forwardemail/superagent/releases/tag/v10.2.2 - maintenance is supported by Forward Email @ https://forwardemail.net
+npm warn deprecated uuid@8.3.2: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
+
+> sparta-test-app@1.0.1 postinstall
+> node seeds/seed.js
+
+Database connection closed
+
+added 371 packages, and audited 372 packages in 19s
+
+59 packages are looking for funding
+  run `npm fund` for details
+
+6 vulnerabilities (5 moderate, 1 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
++ npm test
+
+> sparta-test-app@1.0.1 test
+> npx mocha --exit
+
+Your app is ready and listening on port 3000
+
+
+  Homepage
+    ✔ should display the homepage at / GET (51ms)
+    ✔ should contain the word Sparta at / GET
+
+  Fibonacci
+    ✔ should display the correct fibonacci value at /fibonacci/10 GET
+
+
+  3 passing (76ms)
+
+Triggering a new build of piravien-spapp-job2-ci-merge
+Finished: SUCCESS
+```
+
+### Job 2 - Successful Merge
+
+After Job 1 passed, Job 2 was automatically triggered.
+
+Job 2 merged the changes from 'dev' into 'main' and pushed them to GitHub.
+
+**Job 2 Console Output:**
+
+```text
+Started by upstream project "piravien-spapp-job1-ci-test" build number 9
+originally caused by:
+ Started by user Trainee
+Running as SYSTEM
+Building remotely on EC2 (sparta-aws) - jenkins-node-2204-java17v5 (i-01869545601d0a1d0) in workspace /var/jenkins/workspace/piravien-spapp-job2-ci-merge
+[ssh-agent] Looking for ssh-agent implementation...
+[ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+$ ssh-agent
+SSH_AUTH_SOCK=/tmp/ssh-XXXXXXmIy9rn/agent.4015
+SSH_AGENT_PID=4017
+[ssh-agent] Started.
+Running ssh-add (command line suppressed)
+Identity added: /var/jenkins/workspace/piravien-spapp-job2-ci-merge@tmp/private_key_3870323804628766716.key (jenkins@spapp-scm-ci)
+[ssh-agent] Using credentials piravien_github_key (to read and write to github)
+The recommended git tool is: NONE
+using credential piravien_github_key
+ > git rev-parse --resolve-git-dir /var/jenkins/workspace/piravien-spapp-job2-ci-merge/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git # timeout=10
+Fetching upstream changes from git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.34.1'
+using GIT_SSH to set credentials to read and write to github
+ > git fetch --tags --force --progress -- git@github.com:piravienfive/pre-tech613-sparta-app-cicd-jenkins.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision e73c9c39ff93e74b787a236666a74b9e9f5e47fb (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f e73c9c39ff93e74b787a236666a74b9e9f5e47fb # timeout=10
+Commit message: "add message testing webhook on frontpage"
+ > git rev-list --no-walk e73c9c39ff93e74b787a236666a74b9e9f5e47fb # timeout=10
+[piravien-spapp-job2-ci-merge] $ /bin/sh -xe /tmp/jenkins893908112141552180.sh
++ git checkout main
+Switched to branch 'main'
+Your branch is up to date with 'origin/main'.
++ git merge origin/dev
+Already up to date.
++ git push origin main
+Everything up-to-date
+$ ssh-agent -k
+unset SSH_AUTH_SOCK;
+unset SSH_AGENT_PID;
+echo Agent pid 4017 killed;
+[ssh-agent] Stopped.
+Finished: SUCCESS
+```
