@@ -150,6 +150,8 @@ git push origin main
 
 These commands merge the code from 'dev' into 'main' and push the changes to GitHub.
 
+
+
 ## 5. Evidence of Successful Pipeline
 
 ### Job 1 - Successful Tests
@@ -288,3 +290,130 @@ echo Agent pid 4017 killed;
 [ssh-agent] Stopped.
 Finished: SUCCESS
 ```
+
+
+## 6. Set Up Job 3 - CD Deployment
+
+Job 3 automatically deploys the application to AWS EC2 after Job 2 successfully merges the code into `main`.
+
+I used an EC2 instance launched from an AMI, which already had the application and required software installed.
+
+### 6.1 Prepare the EC2 Instance
+
+I launched an EC2 instance from the AMI and configured its security group to allow ports 22 (SSH) and 3000 (application).
+
+I connected to the instance and checked the existing application:
+
+```bash
+ls /home/ubuntu/repo/app/
+sudo ss -ltnp | grep :3000
+sudo pm2 list
+```
+
+The existing application was located at:
+
+```text
+/home/ubuntu/repo/app/
+```
+
+### 6.2 Add AWS Credentials to Jenkins
+
+I went to **Manage Jenkins > Credentials > Global > Add Credentials**.
+
+I selected **SSH Username with private key** and entered:
+
+- **Username:**
+- **ID:** piravien_aws_key
+- **Private Key:** My EC2 SSH private key
+
+### 6.3 Create Job 3
+
+I created a new Freestyle project called:
+
+```text
+piravien-ttt-job3-cd-deploy
+```
+
+Under **Source Code Management**, I selected Git, added my repository SSH URL and selected my GitHub credentials.
+
+I set the branch specifier to:
+
+```text
+*/main
+```
+
+Under **Build Triggers**, I selected **Build after other projects are built**.
+
+I entered Job 2's name:
+
+```text
+piravien-ttt-job2-ci-merge
+```
+
+I selected **Trigger only if build is stable** and unchecked the GitHub webhook trigger.
+
+Under **Build Environment**, I enabled **SSH Agent** and selected `piravien_aws_key`.
+
+### 6.4 Add the Deployment Script
+
+Under **Build Steps**, I selected **Execute shell** and added:
+
+```bash
+#!/bin/bash
+set -e
+
+mkdir -p ~/.ssh
+chmod 700 ~/.ssh
+
+ssh-keyscan -H 52.16.137.203 >> ~/.ssh/known_hosts
+
+rsync -av app/ ubuntu@52.16.137.203:/home/ubuntu/repo/app/
+
+ssh ubuntu@52.16.137.203 "cd /home/ubuntu/repo/app && npm install --ignore-scripts && sudo pm2 restart APP_NAME"
+```
+
+The script:
+
+1. Configures SSH access to EC2.
+2. Copies the latest files into the existing application directory, overwriting matching files.
+3. Installs dependencies.
+4. Restarts the existing application.
+
+I replaced `APP_NAME` with the existing PM2 process name.
+
+Before running the job, I needed to verify the SSH host key, ensure `ubuntu` could overwrite the application files, and allow the required restart command to run without a sudo password.
+
+### 6.5 Test Job 3
+
+I clicked **Build Now** and checked the console output.
+
+A successful build should finish with:
+
+```text
+Finished: SUCCESS
+```
+
+I then checked the application on EC2:
+
+```bash
+curl http://localhost:3000
+```
+
+I also opened the website:
+
+```text
+http://52.16.137.203:3000
+```
+
+### 6.6 Test the Full Pipeline
+
+I pushed a change to the `dev` branch.
+
+The pipeline automatically:
+
+1. **Job 1:** Tested the code.
+2. **Job 2:** Merged `dev` into `main`.
+3. **Job 3:** Overwrote the existing application files on EC2 and restarted the application.
+
+This completed the automated CI/CD pipeline without creating a second application directory.
+
